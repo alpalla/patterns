@@ -1,3 +1,15 @@
+.square {
+  height: 50px;
+  width: 50px;
+  border: 1px solid black;
+  display: inline-block;
+  margin: 2px;
+}
+
+.highlight {
+  background-color: yellow;
+}
+
 .App {
   text-align: center;
 }
