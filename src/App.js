@@ -14,18 +14,7 @@ class Square extends React.Component {
     })
   }
   handleClick() {
-    if (!this.props.playerTurn) return;
     this.props.handleSquareClick(this.props.id);
-    this.setState({
-      show: true
-    });
-  }
-  hideLater(interval) {
-    setTimeout(() => {
-      this.setState({
-        show: false
-      });
-    }, interval);
   }
   render () {
     const style = {"backgroundColor": this.state.show ? "yellow" : null};
@@ -72,7 +61,7 @@ class Board extends React.Component {
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {n: 3, squares: [], acceptUserInput: false, playerInput: [], gameStarted: false, playerTurn: false};
+    this.state = {n: 3, acceptUserInput: false, playerInput: [], gameStarted: false};
   }
   resizeBoard(e) {
     if (this.state.gameStarted) return;
@@ -81,16 +70,25 @@ class App extends React.Component {
     })
   }
   handleSquareClick(i) {
-    if (GAME_STATE.awaitingInput) console.log(i);
+    if (GAME_STATE.playerTurn) {
+      showSquares([i]);
+      GAME_STATE.input.push(i);
+      if (GAME_STATE.input.length === GAME_STATE.pattern.length) {
+        while (GAME_STATE.input.length > 0) {
+          if (GAME_STATE.input.pop() !== GAME_STATE.pattern.pop()) {
+            alert('YOU LOSE...');
+            return;
+          }
+        }
+        alert('CORRECT');
+        this.startGame();
+      }
+    }
   }
+
   startGame() {
-    this.setState({
-      gameStarted: true,
-      squares: pickKRandomSquares(2),
-    }, () => {
-      showSquares(this.state.squares);
-      this.setState({playerTurn: true});
-    });
+    GAME_STATE.patterns = pickKRandomSquares(this.state.n, GAME_STATE.round);
+    showSquares(GAME_STATE.patterns);
   }
   render() {
     return (

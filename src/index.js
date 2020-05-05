@@ -12,28 +12,41 @@ ReactDOM.render(
 );
 
 var GAME_STATE = {
-  "awaitingInput": false,
-  pattern: []
+  playerTurn: false,
+  pattern: [],
+  input: [],
+  round: 2
+}
+
+function sleep(ms) {
+  console.log('sleep');
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function showSquares(ids) {
   if (ids.length === 0) {
-    GAME_STATE.awaitingInput = true;
+    GAME_STATE.playerTurn = true;
+    GAME_STATE.round++;
+    console.log('Player turn!')
     return;
   };
   let el = document.getElementById(ids[0]);
   el.classList.add("highlight");
   setTimeout(() => {
     el.classList.remove("highlight");
-    if(ids.length > 1) showSquares(ids.slice(1))
+    if(ids.length > 0) {
+      showSquares(ids.slice(1));
+    }
   }, 1000);
 }
 
-function pickKRandomSquares(k) {
+function pickKRandomSquares(n, k) {
   let squares = [];
   for(let i = 0; i < k; i++) {
-    squares.push(Math.floor(Math.random() * this.state.n * this.state.n));
+    squares.push(Math.floor(Math.random() * n * n));
   }
+  GAME_STATE.pattern = squares;
+  console.log(GAME_STATE.pattern);
   return squares;
 }
 
@@ -42,4 +55,4 @@ function pickKRandomSquares(k) {
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
 
-export {GAME_STATE, showSquares, pickK}
+export {GAME_STATE, showSquares, pickKRandomSquares}
