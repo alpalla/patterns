@@ -1,31 +1,17 @@
 import React from 'react';
 import './App.css';
-import { showSquares, GAME_STATE, pickKRandomSquares } from '.';
+import { showSquares, GAME_STATE, pickKRandomSquares } from './game.js';
 
 
 class Square extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {show: false};
-  }
-  componentDidMount() {
-    this.setState({
-      show: this.props.show
-    })
-  }
-  handleClick() {
-    this.props.handleSquareClick(this.props.id);
-  }
   render () {
-    const style = {"backgroundColor": this.state.show ? "yellow" : null};
-    if (this.state.show) this.hideLater(300);
     return (
       <div id={this.props.id} className="square"
-      onClick={() => {this.handleClick()}}
-      onMouseDown={() => document.getElementById(this.props.id).classList.add("highlight")}
-      onMouseUp={() => document.getElementById(this.props.id).classList.remove("highlight")}
-      onMouseLeave={() => document.getElementById(this.props.id).classList.remove("highlight")}
-      style={style}/>
+      onClick={() => this.props.handleSquareClick(this.props.id)}
+      onMouseDown={() => {if (GAME_STATE.playerTurn) document.getElementById(this.props.id).classList.add("highlight")}}
+      onMouseUp={() => {if (GAME_STATE.playerTurn) document.getElementById(this.props.id).classList.remove("highlight")}}
+      onMouseLeave={() => {if (GAME_STATE.playerTurn) document.getElementById(this.props.id).classList.remove("highlight")}}
+      />
     )
   }
 }
@@ -53,7 +39,6 @@ class Board extends React.Component {
     }
     return (
       <div>
-        
         <div className="board">{board}</div>
       </div>
       
@@ -64,7 +49,7 @@ class Board extends React.Component {
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {n: 3, acceptUserInput: false, playerInput: [], gameStarted: false};
+    this.state = {n: 3};
   }
   resizeBoard(e) {
     if (this.state.gameStarted) return;
@@ -80,12 +65,12 @@ class App extends React.Component {
       }
       if (GAME_STATE.pattern.length === 0) {
         alert('CORRECT');
-        this.startGame();
+        this.startRound();
       }
     }
   }
-
-  startGame() {
+  startRound() {
+    GAME_STATE.playerTurn = false;
     GAME_STATE.patterns = pickKRandomSquares(this.state.n, GAME_STATE.round);
     showSquares(GAME_STATE.patterns);
   }
@@ -93,7 +78,7 @@ class App extends React.Component {
     return (
       <div className="App">
         <input type="number" defaultValue={this.state.n} onChange={this.resizeBoard.bind(this)} min={2} max={5}></input>
-        <button onClick={this.startGame.bind(this)}>GO</button>
+        <button onClick={this.startRound.bind(this)}>GO</button>
         <Board n={this.state.n} handleSquareClick={this.handleSquareClick.bind(this)} playerTurn={this.state.playerTurn} />
       </div>
     );
