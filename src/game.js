@@ -5,6 +5,13 @@ var GAME_STATE = {
     round: 2
 }
 
+function reset() {
+    GAME_STATE.playerTurn = false;
+    GAME_STATE.pattern = [];
+    GAME_STATE.input = [];
+    GAME_STATE.round = 2;
+}
+
 function showSquares(ids) {
     if (ids.length === 0) {
         GAME_STATE.playerTurn = true;
@@ -32,4 +39,4 @@ function pickKRandomSquares(n, k) {
     return squares;
 }
 
-export { GAME_STATE, showSquares, pickKRandomSquares }
+export { GAME_STATE, showSquares, pickKRandomSquares, reset }
