@@ -18,11 +18,6 @@ var GAME_STATE = {
   round: 2
 }
 
-function sleep(ms) {
-  console.log('sleep');
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 function showSquares(ids) {
   if (ids.length === 0) {
     GAME_STATE.playerTurn = true;
@@ -35,7 +30,7 @@ function showSquares(ids) {
   setTimeout(() => {
     el.classList.remove("highlight");
     if(ids.length > 0) {
-      showSquares(ids.slice(1));
+      setTimeout(() => showSquares(ids.slice(1)), 500);
     }
   }, 1000);
 }

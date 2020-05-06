@@ -22,6 +22,9 @@ class Square extends React.Component {
     return (
       <div id={this.props.id} className="square"
       onClick={() => {this.handleClick()}}
+      onMouseDown={() => document.getElementById(this.props.id).classList.add("highlight")}
+      onMouseUp={() => document.getElementById(this.props.id).classList.remove("highlight")}
+      onMouseLeave={() => document.getElementById(this.props.id).classList.remove("highlight")}
       style={style}/>
     )
   }
@@ -71,15 +74,11 @@ class App extends React.Component {
   }
   handleSquareClick(i) {
     if (GAME_STATE.playerTurn) {
-      showSquares([i]);
-      GAME_STATE.input.push(i);
-      if (GAME_STATE.input.length === GAME_STATE.pattern.length) {
-        while (GAME_STATE.input.length > 0) {
-          if (GAME_STATE.input.pop() !== GAME_STATE.pattern.pop()) {
-            alert('YOU LOSE...');
-            return;
-          }
-        }
+      if (i !== GAME_STATE.pattern.shift()) {
+        alert('YOU LOSE...');
+        return;
+      }
+      if (GAME_STATE.pattern.length === 0) {
         alert('CORRECT');
         this.startGame();
       }
