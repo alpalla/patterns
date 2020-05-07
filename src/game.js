@@ -15,7 +15,6 @@ function reset() {
 function showSquares(ids) {
     if (ids.length === 0) {
         GAME_STATE.playerTurn = true;
-        GAME_STATE.round++;
         console.log('Player turn!')
         return;
     };

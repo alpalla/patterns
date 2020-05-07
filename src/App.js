@@ -46,6 +46,14 @@ class Board extends React.Component {
   }
 }
 
+class ProgressBarBlock extends React.Component {
+  render() {
+    return(
+      <div className="progressBarBlock" style={{width: this.props.width}}></div>
+    )
+  }
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -72,6 +80,7 @@ class App extends React.Component {
       });
       if (GAME_STATE.pattern.length === 0) {
         alert('CORRECT');
+        GAME_STATE.round++;
         this.startRound();
       }
     }
@@ -85,13 +94,17 @@ class App extends React.Component {
     showSquares(GAME_STATE.patterns);
   }
   render() {
+    let progressBarBlocks = [];
+    for (let i = 0; i < GAME_STATE.round - this.state.squaresRemaining; i++) {
+      progressBarBlocks.push(<ProgressBarBlock width={(100 / GAME_STATE.round).toString() + "%"}/>);
+    }
     return (
       <div className="App">
         <input type="number" defaultValue={this.state.n} onChange={this.resizeBoard.bind(this)} min={2} max={5}></input>
         <button onClick={this.startRound.bind(this)}>GO</button>
         <div>Squares remaining: {this.state.squaresRemaining}</div>
-        <div class="meter">
-          <span style={{"width": "80%;"}}><span class="progress"></span></span>
+        <div class="progressBar">
+          {progressBarBlocks}
         </div>
         <Board n={this.state.n} handleSquareClick={this.handleSquareClick.bind(this)} playerTurn={this.state.playerTurn} />
       </div>
