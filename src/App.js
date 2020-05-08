@@ -79,7 +79,7 @@ class App extends React.Component {
         squaresRemaining: this.state.squaresRemaining - 1
       });
       if (GAME_STATE.pattern.length === 0) {
-        alert('CORRECT');
+        // alert('CORRECT');
         GAME_STATE.round++;
         this.startRound();
       }

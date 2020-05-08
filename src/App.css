@@ -1,9 +1,22 @@
+html {
+  background-color: whitesmoke;
+}
+
+button {
+  width: 33vw;
+  max-width: 100px;
+}
+
 .progressBar {
+
   display: flex;
   margin: 0 auto;
-  width: 150px;
+  width: 100 vw;
+  max-width: 300px;
   height: 20px;
   background-color: lightgreen;
+  border-radius: 10%;
+  border: 2px solid black;
 }
 
 .progressBarBlock {
@@ -13,11 +26,15 @@
 }
 
 .square {
-  height: 50px;
-  width: 50px;
-  border: 1px solid black;
+  width: 33vw;
+  height: 33vw;
+  max-height: 100px;
+  max-width: 100px;
+  border: 2px solid black;
   display: inline-block;
   margin: 2px;
+  background-color: floralwhite;
+  border-radius: 10%;
 }
 
 .highlight {
