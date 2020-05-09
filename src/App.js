@@ -54,10 +54,31 @@ class ProgressBarBlock extends React.Component {
   }
 }
 
+class ProgressBar extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {blockWidth: this.props.blockWidth}
+  }
+  componentDidUpdate(prevProps, prevState) {
+    console.log(this.props.blockWidth);
+    if (this.props.blockWidth === "100%") {
+      console.log('playing animation');
+      document.getElementById("progressBar").className = "animation";
+    }
+  }
+  render() {
+    return (
+      <div id="progressBar" className="progressBar">
+        <ProgressBarBlock width={this.props.blockWidth}/>
+      </div>
+    )
+  }
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {n: 3, squaresRemaining: GAME_STATE.round};
+    this.state = {n: 3, k: 2, playerMoves: 0};
   }
   resizeBoard(e) {
     if (this.state.gameStarted) return;
@@ -66,46 +87,49 @@ class App extends React.Component {
     })
   }
   handleSquareClick(i) {
-    if (GAME_STATE.playerTurn) {
-      if (i !== GAME_STATE.pattern.shift()) {
-        alert('YOU LOSE...');
-        reset();
-        this.setState({
-          squaresRemaining: GAME_STATE.round
-        });
-        return;
-      }
-      this.setState({
-        squaresRemaining: this.state.squaresRemaining - 1
+    if (!GAME_STATE.playerTurn) return;
+
+    // Player made wrong move.
+    if (i !== GAME_STATE.pattern.shift()) {
+      alert('YOU LOSE...');
+      reset();
+      this.setState({k: 2});
+      return;
+    }
+
+    if (GAME_STATE.pattern.length === 0) {
+      this.setState({playerMoves: this.state.playerMoves + 1}, () => {
+        setTimeout(() => {
+            this.setState({
+              playerMoves: 0,
+              k: this.state.k + 1,
+            }, () => {
+              this.startRound();
+            });
+        }, 1000, this);
       });
-      if (GAME_STATE.pattern.length === 0) {
-        // alert('CORRECT');
-        GAME_STATE.round++;
-        this.startRound();
-      }
+    } else {
+      this.setState({playerMoves: this.state.playerMoves + 1});
     }
   }
   startRound() {
-    this.setState({
-      squaresRemaining: GAME_STATE.round
-    });
     GAME_STATE.playerTurn = false;
-    GAME_STATE.patterns = pickKRandomSquares(this.state.n, GAME_STATE.round);
+    GAME_STATE.patterns = pickKRandomSquares(this.state.n, this.state.k);
     showSquares(GAME_STATE.patterns);
   }
+  changeStartingRound(e) {
+    this.setState({k: parseInt(e.target.value)});
+  }
   render() {
-    let progressBarBlocks = [];
-    for (let i = 0; i < GAME_STATE.round - this.state.squaresRemaining; i++) {
-      progressBarBlocks.push(<ProgressBarBlock width={(100 / GAME_STATE.round).toString() + "%"}/>);
-    }
     return (
       <div className="App">
         <input type="number" defaultValue={this.state.n} onChange={this.resizeBoard.bind(this)} min={2} max={5}></input>
+        <input type="number" defaultValue={this.state.k} onChange={this.changeStartingRound.bind(this)} min={1}></input>
         <button onClick={this.startRound.bind(this)}>GO</button>
-        <div>Squares remaining: {this.state.squaresRemaining}</div>
-        <div class="progressBar">
-          {progressBarBlocks}
-        </div>
+        <div>Squares remaining: {this.state.k - this.state.playerMoves}</div>
+        <ProgressBar
+          numberOfBlocks={this.state.playerMoves}
+          blockWidth={((100 / this.state.k) * this.state.playerMoves).toString() + "%"} />
         <Board n={this.state.n} handleSquareClick={this.handleSquareClick.bind(this)} playerTurn={this.state.playerTurn} />
       </div>
     );
