@@ -59,16 +59,9 @@ class ProgressBar extends React.Component {
     super(props);
     this.state = {blockWidth: this.props.blockWidth}
   }
-  componentDidUpdate(prevProps, prevState) {
-    console.log(this.props.blockWidth);
-    if (this.props.blockWidth === "100%") {
-      console.log('playing animation');
-      document.getElementById("progressBar").className = "animation";
-    }
-  }
   render() {
     return (
-      <div id="progressBar" className="progressBar">
+      <div id="progressBar" className={"progressBar"}>
         <ProgressBarBlock width={this.props.blockWidth}/>
       </div>
     )
@@ -78,7 +71,7 @@ class ProgressBar extends React.Component {
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {n: 3, k: 2, playerMoves: 0};
+    this.state = {n: 3, k: 2, playerMoves: 0, playAnimation: false};
   }
   resizeBoard(e) {
     if (this.state.gameStarted) return;
@@ -111,6 +104,7 @@ class App extends React.Component {
     } else {
       this.setState({playerMoves: this.state.playerMoves + 1});
     }
+    this.setState({playAnimation: true});
   }
   startRound() {
     GAME_STATE.playerTurn = false;
@@ -123,11 +117,18 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
+        <div>
         <input type="number" defaultValue={this.state.n} onChange={this.resizeBoard.bind(this)} min={2} max={5}></input>
+         by {this.state.n} square
+        </div>
+        <div>
+          Starting round:
         <input type="number" defaultValue={this.state.k} onChange={this.changeStartingRound.bind(this)} min={1}></input>
+        </div>
         <button onClick={this.startRound.bind(this)}>GO</button>
         <div>Squares remaining: {this.state.k - this.state.playerMoves}</div>
         <ProgressBar
+          className={this.state.playAnimation ? "animation" : "progressBar"}
           numberOfBlocks={this.state.playerMoves}
           blockWidth={((100 / this.state.k) * this.state.playerMoves).toString() + "%"} />
         <Board n={this.state.n} handleSquareClick={this.handleSquareClick.bind(this)} playerTurn={this.state.playerTurn} />
