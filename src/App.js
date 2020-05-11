@@ -118,8 +118,8 @@ class App extends React.Component {
     return (
       <div className="App">
         <div>
-        <input type="number" defaultValue={this.state.n} onChange={this.resizeBoard.bind(this)} min={2} max={5}></input>
-         by {this.state.n} square
+        <input type="range" defaultValue={this.state.n} onChange={this.resizeBoard.bind(this)} min={2} max={5}></input>
+        {this.state.n} by {this.state.n} board
         </div>
         <div>
           Starting round:
