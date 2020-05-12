@@ -77,7 +77,7 @@ class ProgressBar extends React.Component {
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {n: 3, k: 2, playerMoves: 0, gameStarted: false, topScore: 'X'};
+    this.state = {n: 3, k: 2, playerMoves: 0, gameStarted: false, topScore: 'X', startingRound: 2};
   }
   resizeBoard(e) {
     if (this.state.gameStarted) return;
@@ -92,7 +92,7 @@ class App extends React.Component {
     if (i !== GAME_STATE.pattern.shift()) {
       alert('YOU LOSE...');
       reset();
-      this.setState({gameStarted: false, k: 2, playerMoves: 0});
+      this.setState({gameStarted: false, k: this.state.startingRound, playerMoves: 0});
       return;
     }
 
@@ -122,7 +122,9 @@ class App extends React.Component {
     showSquares(GAME_STATE.patterns);
   }
   changeStartingRound(e) {
-    this.setState({k: parseInt(e.target.value)});
+    this.setState({k: parseInt(e.target.value),
+      startingRound: parseInt(e.target.value)
+    });
   }
   render() {
     return (
@@ -136,7 +138,7 @@ class App extends React.Component {
 
         <div className={this.state.gameStarted ? "inactive" : null}>
           Starting round:
-          <input type="number" value={this.state.k} onChange={this.changeStartingRound.bind(this)}
+          <input type="number" value={this.state.startingRound} onChange={this.changeStartingRound.bind(this)}
           min={1} disabled={this.state.gameStarted}></input>
         </div>
 
