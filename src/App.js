@@ -5,12 +5,14 @@ import { showSquares, GAME_STATE, pickKRandomSquares, reset } from './game.js';
 
 class Square extends React.Component {
   render () {
+    console.log(this.props.width)
     return (
       <div id={this.props.id} className="square"
-      onClick={() => this.props.handleSquareClick(this.props.id)}
-      onMouseDown={() => {if (GAME_STATE.playerTurn) document.getElementById(this.props.id).classList.add("highlight")}}
-      onMouseUp={() => {if (GAME_STATE.playerTurn) document.getElementById(this.props.id).classList.remove("highlight")}}
-      onMouseLeave={() => {if (GAME_STATE.playerTurn) document.getElementById(this.props.id).classList.remove("highlight")}}
+        style={{width: this.props.width, height: this.props.width}}
+        onClick={() => this.props.handleSquareClick(this.props.id)}
+        onMouseDown={() => {if (GAME_STATE.playerTurn) document.getElementById(this.props.id).classList.add("highlight")}}
+        onMouseUp={() => {if (GAME_STATE.playerTurn) document.getElementById(this.props.id).classList.remove("highlight")}}
+        onMouseLeave={() => {if (GAME_STATE.playerTurn) document.getElementById(this.props.id).classList.remove("highlight")}}
       />
     )
   }
@@ -23,7 +25,11 @@ class Board extends React.Component {
     for (let i = 0; i < this.props.n; i++) {
       let row = [];
       for (let j = 0; j < this.props.n; j++) {
-        row.push(<Square key={counter} handleSquareClick={this.props.handleSquareClick} id={counter} playerTurn={this.props.playerTurn}></Square>)
+        row.push(<Square key={counter}
+          handleSquareClick={this.props.handleSquareClick}
+          id={counter}
+          playerTurn={this.props.playerTurn}
+          width={this.props.width}/>)
         counter++;
       }
       rows.push(row);
@@ -71,7 +77,7 @@ class ProgressBar extends React.Component {
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {n: 3, k: 2, playerMoves: 0, playAnimation: false};
+    this.state = {n: 3, k: 2, playerMoves: 0, gameStarted: false, topScore: 'X'};
   }
   resizeBoard(e) {
     if (this.state.gameStarted) return;
@@ -86,7 +92,7 @@ class App extends React.Component {
     if (i !== GAME_STATE.pattern.shift()) {
       alert('YOU LOSE...');
       reset();
-      this.setState({k: 2});
+      this.setState({gameStarted: false, k: 2, playerMoves: 0});
       return;
     }
 
@@ -96,6 +102,8 @@ class App extends React.Component {
             this.setState({
               playerMoves: 0,
               k: this.state.k + 1,
+              topScore: this.state.topScore === 'X' ?
+              this.state.k + 1 : (this.state.k + 1 > this.state.topScore ? this.state.k + 1 : this.state.topScore)
             }, () => {
               this.startRound();
             });
@@ -104,9 +112,11 @@ class App extends React.Component {
     } else {
       this.setState({playerMoves: this.state.playerMoves + 1});
     }
-    this.setState({playAnimation: true});
   }
   startRound() {
+    if (!this.state.gameStarted) {
+      this.setState({gameStarted: true});
+    }
     GAME_STATE.playerTurn = false;
     GAME_STATE.patterns = pickKRandomSquares(this.state.n, this.state.k);
     showSquares(GAME_STATE.patterns);
@@ -117,21 +127,36 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <div>
-        <input type="range" defaultValue={this.state.n} onChange={this.resizeBoard.bind(this)} min={2} max={5}></input>
-        {this.state.n} by {this.state.n} board
+
+        <div className={this.state.gameStarted ? "inactive" : null}>
+          <input type="range" defaultValue={this.state.n} onChange={this.resizeBoard.bind(this)}
+          min={2} max={5} disabled={this.state.gameStarted}></input>
+          {this.state.n} by {this.state.n} board
         </div>
-        <div>
+
+        <div className={this.state.gameStarted ? "inactive" : null}>
           Starting round:
-        <input type="number" defaultValue={this.state.k} onChange={this.changeStartingRound.bind(this)} min={1}></input>
+          <input type="number" value={this.state.k} onChange={this.changeStartingRound.bind(this)}
+          min={1} disabled={this.state.gameStarted}></input>
         </div>
-        <button onClick={this.startRound.bind(this)}>GO</button>
-        <div>Squares remaining: {this.state.k - this.state.playerMoves}</div>
+
+        <button onClick={this.startRound.bind(this)} disabled={this.state.gameStarted}>
+          <b>PLAY</b>
+        </button>
+
+        <div>Top score: <b>{this.state.topScore}</b></div>
+
+        <div>Squares remaining: <b>{this.state.k - this.state.playerMoves}</b></div>
+
         <ProgressBar
-          className={this.state.playAnimation ? "animation" : "progressBar"}
+          className={"progressBar"}
           numberOfBlocks={this.state.playerMoves}
           blockWidth={((100 / this.state.k) * this.state.playerMoves).toString() + "%"} />
-        <Board n={this.state.n} handleSquareClick={this.handleSquareClick.bind(this)} playerTurn={this.state.playerTurn} />
+          
+        <Board n={this.state.n}
+          handleSquareClick={this.handleSquareClick.bind(this)}
+          playerTurn={this.state.playerTurn} 
+          width={(80 / this.state.n).toString() + 'vw'}/>
       </div>
     );
   }

@@ -6,7 +6,6 @@ var GAME_STATE = {
 function reset() {
     GAME_STATE.playerTurn = false;
     GAME_STATE.pattern = [];
-    GAME_STATE.input = [];
 }
 
 function showSquares(ids) {
