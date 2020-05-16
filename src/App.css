@@ -13,11 +13,11 @@ button {
 }
 
 .highlight {
-  background-color: lightsalmon;
+  background-color: gold !important;
 }
 
 html {
-  background-color: powderblue;
+  background-color: whitesmoke;
 }
 
 .inactive {
